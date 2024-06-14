@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>勤益影城-管理員介面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+         .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .movies {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(252, 252, 252, 0.2);
+            color: white;
+            text-align: center;
+        }
+        h3{
+            color: red;
+        }
+        .movies button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn{
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div>
+            <a href="{{ url_for('movie_list') }}" id="logo"><img src="{{ url_for('static', filename='images/logo.png') }}" alt=""></a>
+        </div>
+    </div>
+    <div class="movies">
+        <a href="{{ url_for('add_movie') }}" class="btn">新增電影</a>
+        <a href="{{ url_for('admin_logout') }}" class="btn">登出</a>
+    </div>
+    <div class="container">
+        <div class="grid-container">
+            {% for movie in all_movies %}
+            <div class="movies">
+                <h3>{{ movie['title'] }}</h3>
+                <p>{{ movie['director'] }}</p>
+                <p>{{ movie['rating'] }}</p>
+                <form method="post" action="{{ url_for('movie_list') }}">
+                    <input type="hidden" name="delete_movie_id" value="{{ movie['id'] }}">
+                    <button type="submit">刪除電影</button>
+                </form>
+                <form method="post" action="{{ url_for('edit_showtime', movie_id=movie['id']) }}">
+                    <input type="hidden" name="edit_showtime_movie_id" value="{{ movie['id'] }}">
+                    <button type="submit">增修場次</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

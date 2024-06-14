@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>勤益影城-訂票結果</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div>
+            <a href="{{ url_for('index') }}" id="logo"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="勤益影城"></a>
+            <ul>
+                <li>
+                    <a href="{{ url_for('index') }}">影城首頁</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('movies') }}">電影資訊</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('ticket') }}">票價資訊</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('buy') }}">快速訂票</a>
+                </li>
+                {% if 'phone' in session %}
+                    <li>
+                        <a href="{{ url_for('member') }}">會員資料</a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('logout') }}">登出</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{{ url_for('login') }}">登入/註冊</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <h1>Booking Confirmation</h1>
+    <p>選擇的座位：</p>
+    <ul>
+        {% for seat in selected_seats %}
+            <li>{{ seat }}</li>
+        {% endfor %}
+    </ul>
+    <p>訂位票種：</p>
+    <ul>
+        <li>全票：{{ adult_quantity }}</li>
+        <li>優待票：{{ concession_quantity }}</li>
+        <li>愛心票：{{ disabled_quantity }}</li>
+        <li>敬老票：{{ senior_quantity }}</li>
+    </ul>
+    <div id="footer">
+        <div>
+            <p>&copy;勤益影城</p>
+        </div>
+    </div>
+
+
+</body>
+</html>
+

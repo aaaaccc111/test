@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>勤益影城-編輯場次</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-control {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #444;
+            color: white;
+        }
+        .alert {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div>
+            <a href="{{ url_for('index') }}" id="logo"><img src="{{ url_for('static', filename='images/logo.png') }}" alt=""></a>
+        </div>
+    </div>
+    <div class="container">
+        <h2>增修場次</h2>
+        <form method="post" action="{{ url_for('edit_showtime', movie_id=movie_id) }}">
+            <div class="form-group">
+                <label for="date">日期</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="time">時間</label>
+                <input type="time" class="form-control" id="time" name="time" required>
+            </div>
+            <div class="form-group">
+                <label for="seats">座位數</label>
+                <input type="number" class="form-control" id="seats" name="seats" min="1" max="50" required>
+            </div>
+            <button type="submit" class="btn">新增場次</button>
+        </form>
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <h3>現有場次</h3>
+        <form method="post" action="{{ url_for('delete_showtime', movie_id=movie_id) }}">
+            <table>
+                <tr>
+                    <th>選取</th>
+                    <th>場次時間</th>
+                    <th>座位數</th>
+                </tr>
+                {% for showtime in showtimes %}
+                <tr>
+                    <td><input type="checkbox" name="delete_showtimes" value="{{ showtime['id'] }}"></td>
+                    <td>{{ showtime['showtime'] }}</td>
+                    <td>{{ showtime['seats_count'] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <button type="submit" class="btn">刪除場次</button>
+        </form>
+        <form method="get" action="{{ url_for('movie_list') }}">
+            <button type="submit" class="btn">返回列表</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>勤益影城-管理者登入</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .selected {
+            font-weight: bold;
+            color: red;
+        }
+        input::placeholder {
+            color: rgb(125, 125, 125);
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+        }
+        .alert {
+            color: red;
+            margin-top: 10px;
+        }
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        label {
+            width: 20%;
+            display: inline-block;
+        }
+        .form-control {
+            width: 95%;
+            display: inline-block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div>
+            <a href="{{ url_for('index') }}" id="logo"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="勤益影城"></a>
+        </div>
+    </div>
+    <div class="container">
+        <h2 class="form-title">管理員登入</h2>
+                <form  method="post" action="{{ url_for('admin_login') }}">
+                    <div class="form-group">
+                        <label for="admin">管理員帳號</label>
+                        <input type="text" class="form-control" id="admin" name="admin"  required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">管理員密碼:</label>
+                        <input type="password" class="form-control" id="password" name="password"  required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">登入</button>
+                </form>
+                <br>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">返回首頁</a>
+        <!-- 顯示錯誤消息 -->
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
