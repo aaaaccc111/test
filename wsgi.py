@@ -44,7 +44,7 @@ def validate_password(password):
     """
     驗證密碼格式
     """
-    return re.match(r'^[0-9a-zA-Z]{8,}$', password)
+    return re.match(r'^[0-9a-zA-Z]{8}$', password)
 
 
 # 首頁
@@ -259,6 +259,9 @@ def add_movie():
     if 'admin' not in session:
         return redirect(url_for('admin_login'))
 
+    if 'phone' in session:
+        return redirect(url_for('index'))
+
     #新增電影資料
     if request.method == 'POST':
         movie_name = request.form['title']
@@ -285,9 +288,11 @@ def movie_list():
     if 'admin' not in session:
         return redirect(url_for('admin_login'))
 
+    if 'phone' in session:
+        return redirect(url_for('index'))
+
     conn = create_connection(db_file)
     c = conn.cursor()
-
 
 
     #刪除電影及增修場次
@@ -312,33 +317,58 @@ def edit_showtime(movie_id):
     if 'admin' not in session:
         return redirect(url_for('admin_login'))
 
+    if 'phone' in session:
+        return redirect(url_for('index'))
+
     conn = create_connection(db_file)
     c = conn.cursor()
 
     if request.method == 'POST':
-        if 'date' in request.form and 'time' in request.form and 'seats' in request.form:
+        if 'date' in request.form and 'time' in request.form and \
+                                                    'seats' in request.form:
             date = request.form['date']
             time = request.form['time']
             seats = request.form['seats']
 
             if int(seats) > 50:
                 error_message = '座位數量不可超過50'
-                c.execute("SELECT id, showtime, seats_count FROM showtimes WHERE movie_id = ?", (movie_id,))
+                c.execute(
+                    "SELECT id, \
+                    showtime, \
+                    seats_count FROM showtimes WHERE movie_id = ?",
+                    (movie_id,)
+                    )
                 showtimes = c.fetchall()
                 showtimes = [dict(showtime) for showtime in showtimes]
-                return render_template('editshowtime.html', movie_id=movie_id, showtimes=showtimes, error=error_message)
+                return render_template(
+                    'editshowtime.html',
+                    movie_id=movie_id,
+                    showtimes=showtimes,
+                    error=error_message
+                    )
 
             # 將選擇的日期和時間合併成一個時間格式
             showtime = f"{date} {time}"
-            c.execute("INSERT INTO showtimes (movie_id, showtime, seats_count) VALUES (?, ?, ?)", (movie_id, showtime, seats))
+            c.execute(
+                "INSERT INTO showtimes \
+                    (movie_id, showtime, seats_count) VALUES (?, ?, ?)",
+                (movie_id, showtime, seats)
+                )
             conn.commit()
 
-    c.execute("SELECT id, showtime, seats_count FROM showtimes WHERE movie_id = ?", (movie_id,))
+    c.execute(
+        "SELECT id, showtime, seats_count FROM showtimes WHERE movie_id = ?",
+        (movie_id,)
+        )
     showtimes = c.fetchall()
     showtimes = [dict(showtime) for showtime in showtimes]  # 將每個 Row 對象轉換為字典
 
     conn.close()
-    return render_template('editshowtime.html', movie_id=movie_id, showtimes=showtimes)
+    return render_template(
+        'editshowtime.html',
+        movie_id=movie_id,
+        showtimes=showtimes
+        )
 
 
 
@@ -350,12 +380,17 @@ def delete_showtime(movie_id):
     if 'admin' not in session:
         return redirect(url_for('admin_login'))
 
+    if 'phone' in session:
+        return redirect(url_for('index'))
+
     showtime_ids = request.form.getlist('delete_showtimes')
 
     if showtime_ids:
         conn = create_connection(db_file)
         c = conn.cursor()
-        c.execute("DELETE FROM showtimes WHERE id IN ({})".format(','.join('?' * len(showtime_ids))), showtime_ids)
+        c.execute(
+            "DELETE FROM showtimes WHERE id IN ({})".format(
+                    ','.join('?' * len(showtime_ids))), showtime_ids)
         conn.commit()
         conn.close()
 
@@ -389,7 +424,10 @@ def movies():
 
         with create_connection(db_file) as conn:
             c = conn.cursor()
-            c.execute("INSERT INTO movies (title, director, year) VALUES (?, ?, ?)", (title, director, year))
+            c.execute(
+                "INSERT INTO movies (title, director, year) VALUES (?, ?, ?)",
+                (title, director, year)
+                )
             conn.commit()
 
         conn = create_connection(db_file)
@@ -417,8 +455,17 @@ def buy():
             with create_connection(db_file) as conn:
                 c = conn.cursor()
                 for seat in selected_seats:
-                    c.execute("INSERT INTO buy (userphone, showtime_id, seat_number) VALUES (?, ?, ?)", (session['phone'], showtime_id, seat))
-                    c.execute("UPDATE seats SET booked = 1 WHERE showtime_id = ? AND seat_number = ?", (showtime_id, seat))
+                    c.execute(
+                        "INSERT INTO buy \
+                            (userphone, showtime_id, seat_number)\
+                                VALUES (?, ?, ?)",
+                        (session['phone'], showtime_id, seat)
+                        )
+                    c.execute(
+                        "UPDATE seats SET booked = 1 WHERE showtime_id = ? \
+                            AND seat_number = ?",
+                        (showtime_id, seat)
+                        )
                 conn.commit()
             return redirect(url_for('member'))
         else:
@@ -427,7 +474,8 @@ def buy():
                 conn = create_connection(db_file)
                 c = conn.cursor()
                 c.execute("""
-                    SELECT movies.title, showtimes.id AS showtime_id, showtimes.showtime, showtimes.seats_count
+                    SELECT movies.title, showtimes.id AS showtime_id, \
+                        showtimes.showtime, showtimes.seats_count
                     FROM movies
                     JOIN showtimes ON movies.id = showtimes.movie_id
                     WHERE movies.id = ?
